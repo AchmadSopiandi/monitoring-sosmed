@@ -90,7 +90,7 @@
     </div>
 
     <div class="report-actions">
-        <a class="button secondary" href="{{ route('reports.twitter.export.excel', array_merge(request()->query(), ['tweet_id' => $tweet->id])) }}">Export Excel</a>
+        <a class="button excel" href="{{ route('reports.twitter.export.excel', array_merge(request()->query(), ['tweet_id' => $tweet->id])) }}"><i class="bi bi-file-earmark-excel-fill"></i>Export Excel</a>
         <a class="button secondary" href="{{ route('reports.twitter.export.pdf', array_merge(request()->query(), ['tweet_id' => $tweet->id])) }}" target="_blank">Export PDF</a>
     </div>
 

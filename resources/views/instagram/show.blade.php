@@ -94,7 +94,7 @@
     </div>
 
     <div class="report-actions">
-        <a class="button secondary" href="{{ route('reports.export.excel', array_merge(request()->query(), ['post_id' => $post->id])) }}">Export Excel</a>
+        <a class="button excel" href="{{ route('reports.export.excel', array_merge(request()->query(), ['post_id' => $post->id])) }}"><i class="bi bi-file-earmark-excel-fill"></i>Export Excel</a>
         <a class="button secondary" href="{{ route('reports.export.pdf', array_merge(request()->query(), ['post_id' => $post->id])) }}" target="_blank">Export PDF</a>
     </div>
 

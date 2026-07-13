@@ -73,7 +73,7 @@ class ReportExportController extends Controller
     public function twitterExcel(Request $request): StreamedResponse
     {
         $filters = $request->validate([
-            'period' => ['nullable', 'in:today,weekly,monthly,custom'],
+            'period' => ['nullable', 'in:today,weekly,monthly,yearly,custom'],
             'from' => ['nullable', 'date'],
             'to' => ['nullable', 'date', 'after_or_equal:from'],
             'sentiment' => ['nullable', 'in:Positif,Netral,Negatif'],
@@ -102,7 +102,7 @@ class ReportExportController extends Controller
     public function twitterPdf(Request $request): View
     {
         $filters = $request->validate([
-            'period' => ['nullable', 'in:today,weekly,monthly,custom'],
+            'period' => ['nullable', 'in:today,weekly,monthly,yearly,custom'],
             'from' => ['nullable', 'date'],
             'to' => ['nullable', 'date', 'after_or_equal:from'],
             'sentiment' => ['nullable', 'in:Positif,Netral,Negatif'],
@@ -132,11 +132,11 @@ class ReportExportController extends Controller
     private function validatedFilters(Request $request): array
     {
         return $request->validate([
-            'period' => ['nullable', 'in:today,weekly,monthly,custom'],
+            'period' => ['nullable', 'in:today,weekly,monthly,yearly,custom'],
             'from' => ['nullable', 'date'],
             'to' => ['nullable', 'date', 'after_or_equal:from'],
             'sentiment' => ['nullable', 'in:Positif,Netral,Negatif'],
-            'post_id' => ['required', 'exists:instagram_posts,id'],
+            'post_id' => ['nullable', 'exists:instagram_posts,id'],
             'search' => ['nullable', 'string', 'max:100'],
         ]);
     }
