@@ -249,10 +249,6 @@
                 <a href="{{ route('dashboard', ['period' => 'yearly']) }}" class="{{ $period === 'yearly' ? 'active' : '' }}">Tahunan</a>
             </div>
             <a class="button excel" href="{{ route('reports.export.excel', ['period' => $period]) }}"><i class="bi bi-file-earmark-excel-fill"></i>Export Excel</a>
-            <form class="logout-form" method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button class="logout-button" type="submit"><i class="bi bi-box-arrow-right"></i>Logout</button>
-            </form>
         </div>
     </div>
 
