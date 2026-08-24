@@ -23,11 +23,13 @@ class InstagramPostController extends Controller
     ) {
     }
 
-    public function index(Request $request): View
+    public function index(Request $request, InstagramService $instagram): View
     {
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:100'],
         ]);
+
+        $this->syncPostsFromInstagram($instagram);
 
         return view('instagram.cards', [
             'posts' => $this->posts->paginate($filters),
@@ -35,7 +37,7 @@ class InstagramPostController extends Controller
         ]);
     }
 
-    public function show(Request $request, InstagramPost $instagramPost): View
+    public function show(Request $request, InstagramPost $instagramPost, InstagramService $instagram): View
     {
         $filters = $request->validate([
             'period' => ['nullable', 'in:today,weekly,monthly,custom'],
@@ -46,6 +48,7 @@ class InstagramPostController extends Controller
         ]);
 
         $filters['post_id'] = (string) $instagramPost->id;
+        $this->syncCommentsFromInstagram($instagramPost, $instagram);
         $counts = $this->comments->countsBySentiment($filters);
         $dailyCounts = $this->comments->dailyCounts($filters);
 
@@ -76,12 +79,7 @@ class InstagramPostController extends Controller
     public function syncPosts(InstagramService $instagram): RedirectResponse
     {
         try {
-            $imported = 0;
-
-            foreach ($instagram->fetchPosts() as $post) {
-                $this->posts->upsert($post);
-                $imported++;
-            }
+            $imported = $this->syncPostsFromInstagram($instagram);
 
             return back()->with('success', "{$imported} postingan Instagram diproses.");
         } catch (Throwable $exception) {
@@ -91,7 +89,41 @@ class InstagramPostController extends Controller
         }
     }
 
+    private function syncPostsFromInstagram(InstagramService $instagram): int
+    {
+        try {
+            $imported = 0;
+
+            foreach ($instagram->fetchPosts() as $post) {
+                $this->posts->upsert($post);
+                $imported++;
+            }
+
+            return $imported;
+        } catch (Throwable $exception) {
+            Log::error('Failed to sync Instagram posts.', ['message' => $exception->getMessage()]);
+
+            return 0;
+        }
+    }
+
     public function syncComments(InstagramPost $instagramPost, InstagramService $instagram): RedirectResponse
+    {
+        try {
+            $imported = $this->syncCommentsFromInstagram($instagramPost, $instagram);
+
+            return back()->with('success', "{$imported} komentar diproses dari postingan yang dipilih.");
+        } catch (Throwable $exception) {
+            Log::error('Failed to sync Instagram comments.', [
+                'instagram_post_id' => $instagramPost->id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return back()->with('error', $exception->getMessage());
+        }
+    }
+
+    private function syncCommentsFromInstagram(InstagramPost $instagramPost, InstagramService $instagram): int
     {
         try {
             $imported = 0;
@@ -114,14 +146,14 @@ class InstagramPostController extends Controller
                 $imported++;
             }
 
-            return back()->with('success', "{$imported} komentar diproses dari postingan yang dipilih.");
+            return $imported;
         } catch (Throwable $exception) {
             Log::error('Failed to sync Instagram comments.', [
                 'instagram_post_id' => $instagramPost->id,
                 'message' => $exception->getMessage(),
             ]);
 
-            return back()->with('error', $exception->getMessage());
+            return 0;
         }
     }
 }

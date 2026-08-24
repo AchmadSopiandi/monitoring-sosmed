@@ -9,6 +9,13 @@ use App\Http\Controllers\ReportExportController;
 use App\Http\Controllers\TwitterController;
 use App\Http\Controllers\ApiSettingController;
 
+Route::get('/assets/login-pattern.png', function () {
+    return response()->file(resource_path('image/login-pattern.png'), [
+        'Content-Type' => 'image/png',
+        'Cache-Control' => 'public, max-age=31536000, immutable',
+    ]);
+})->name('login.pattern');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.store');

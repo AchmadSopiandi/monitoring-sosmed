@@ -8,10 +8,6 @@
             <h1>Postingan Instagram</h1>
             <p class="subtitle">Ambil daftar postingan, pilih satu, lalu sinkronkan komentarnya.</p>
         </div>
-        <form action="{{ route('instagram.posts.sync') }}" method="POST">
-            @csrf
-            <button type="submit">Sync Postingan</button>
-        </form>
     </div>
 
     <form class="panel filters" method="GET" action="{{ route('instagram.posts.index') }}">
@@ -50,16 +46,12 @@
                             <td>
                                 <div class="actions">
                                     <a class="button secondary" href="{{ route('instagram.posts.show', $post) }}">Pilih</a>
-                                    <form action="{{ route('instagram.posts.comments.sync', $post) }}" method="POST">
-                                        @csrf
-                                        <button type="submit">Sync Komentar</button>
-                                    </form>
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td class="empty" colspan="4">Belum ada postingan. Klik Sync Postingan untuk mengambil daftar dari Instagram.</td>
+                            <td class="empty" colspan="4">Belum ada postingan Instagram.</td>
                         </tr>
                     @endforelse
                 </tbody>

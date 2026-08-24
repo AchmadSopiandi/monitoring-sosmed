@@ -23,11 +23,13 @@ class TwitterController extends Controller
     ) {
     }
 
-    public function index(Request $request): View
+    public function index(Request $request, TwitterService $twitter): View
     {
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:100'],
         ]);
+
+        $this->syncTweetsFromTwitter($twitter);
 
         return view('twitter.cards', [
             'tweets' => $this->tweets->paginate($filters),
@@ -35,7 +37,7 @@ class TwitterController extends Controller
         ]);
     }
 
-    public function show(Request $request, Tweet $tweet): View
+    public function show(Request $request, Tweet $tweet, TwitterService $twitter): View
     {
         $filters = $request->validate([
             'period' => ['nullable', 'in:today,weekly,monthly,custom'],
@@ -46,6 +48,7 @@ class TwitterController extends Controller
         ]);
 
         $filters['tweet_id'] = (string) $tweet->id;
+        $this->syncRepliesFromTwitter($tweet, $twitter);
         $counts = $this->comments->countsBySentiment($filters);
         $dailyCounts = $this->comments->dailyCounts($filters);
 
@@ -76,12 +79,7 @@ class TwitterController extends Controller
     public function syncTweets(TwitterService $twitter): RedirectResponse
     {
         try {
-            $imported = 0;
-
-            foreach ($twitter->fetchTweets() as $tweet) {
-                $this->tweets->upsert($tweet);
-                $imported++;
-            }
+            $imported = $this->syncTweetsFromTwitter($twitter);
 
             return back()->with('success', "{$imported} tweet diproses.");
         } catch (Throwable $exception) {
@@ -91,7 +89,41 @@ class TwitterController extends Controller
         }
     }
 
+    private function syncTweetsFromTwitter(TwitterService $twitter): int
+    {
+        try {
+            $imported = 0;
+
+            foreach ($twitter->fetchTweets() as $tweet) {
+                $this->tweets->upsert($tweet);
+                $imported++;
+            }
+
+            return $imported;
+        } catch (Throwable $exception) {
+            Log::error('Failed to sync Twitter/X tweets.', ['message' => $exception->getMessage()]);
+
+            return 0;
+        }
+    }
+
     public function syncReplies(Tweet $tweet, TwitterService $twitter): RedirectResponse
+    {
+        try {
+            $imported = $this->syncRepliesFromTwitter($tweet, $twitter);
+
+            return back()->with('success', "{$imported} reply diproses dari tweet yang dipilih.");
+        } catch (Throwable $exception) {
+            Log::error('Failed to sync Twitter/X replies.', [
+                'tweet_id' => $tweet->id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return back()->with('error', $exception->getMessage());
+        }
+    }
+
+    private function syncRepliesFromTwitter(Tweet $tweet, TwitterService $twitter): int
     {
         try {
             $imported = 0;
@@ -114,14 +146,14 @@ class TwitterController extends Controller
                 $imported++;
             }
 
-            return back()->with('success', "{$imported} reply diproses dari tweet yang dipilih.");
+            return $imported;
         } catch (Throwable $exception) {
             Log::error('Failed to sync Twitter/X replies.', [
                 'tweet_id' => $tweet->id,
                 'message' => $exception->getMessage(),
             ]);
 
-            return back()->with('error', $exception->getMessage());
+            return 0;
         }
     }
 }

@@ -19,25 +19,29 @@
         * { box-sizing: border-box; }
         body {
             background:
-                radial-gradient(circle at 18% 10%, rgba(46, 230, 166, .22), transparent 26%),
-                radial-gradient(circle at 85% 18%, rgba(17, 167, 239, .22), transparent 28%),
-                linear-gradient(180deg, #f6f9fc 0%, #edf4fb 100%);
+                linear-gradient(rgba(246, 249, 252, .18), rgba(237, 244, 251, .18)),
+                url('{{ route('login.pattern') }}') center / 280px auto repeat fixed;
             color: var(--text);
             display: flex;
+            align-items: center;
             justify-content: center;
             margin: 0;
             min-height: 100vh;
             padding: 24px;
+            position: relative;
         }
 
         .login-card {
-            background: #ffffff;
+            background: rgba(255, 255, 255, .94);
+            backdrop-filter: blur(6px);
             border: 1px solid var(--border);
             border-radius: 12px;
             box-shadow: 0 18px 46px rgba(15, 23, 42, .10);
             max-width: 420px;
             padding: 28px;
+            position: relative;
             width: 100%;
+            z-index: 1;
         }
 
         .brand {

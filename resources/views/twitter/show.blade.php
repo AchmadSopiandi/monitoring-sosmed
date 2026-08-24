@@ -9,10 +9,6 @@
             <p class="subtitle">Reply tersimpan dari tweet Twitter/X yang dipilih.</p>
         </div>
         <div class="actions">
-            <form action="{{ route('twitter.tweets.replies.sync', $tweet) }}" method="POST">
-                @csrf
-                <button type="submit">Sync Reply</button>
-            </form>
             <a class="button secondary" href="{{ route('twitter.tweets.index') }}">Kembali</a>
         </div>
     </div>

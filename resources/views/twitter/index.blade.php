@@ -8,10 +8,6 @@
             <h1>Tweet Twitter/X</h1>
             <p class="subtitle">Ambil daftar tweet, pilih salah satu, lalu sinkronkan reply.</p>
         </div>
-        <form action="{{ route('twitter.tweets.sync') }}" method="POST">
-            @csrf
-            <button type="submit">Sync Tweet</button>
-        </form>
     </div>
 
     <form class="panel filters" method="GET" action="{{ route('twitter.tweets.index') }}">
@@ -52,16 +48,12 @@
                             <td>
                                 <div class="actions">
                                     <a class="button secondary" href="{{ route('twitter.tweets.show', $tweet) }}">Pilih</a>
-                                    <form action="{{ route('twitter.tweets.replies.sync', $tweet) }}" method="POST">
-                                        @csrf
-                                        <button type="submit">Sync Reply</button>
-                                    </form>
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td class="empty" colspan="5">Belum ada tweet. Klik Sync Tweet setelah token Twitter/X dikonfigurasi.</td>
+                            <td class="empty" colspan="5">Belum ada tweet Twitter/X.</td>
                         </tr>
                     @endforelse
                 </tbody>

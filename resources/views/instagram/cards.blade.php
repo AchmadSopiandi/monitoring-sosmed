@@ -8,7 +8,6 @@
             <h1>Postingan Instagram</h1>
             <p class="subtitle">Pilih postingan untuk melihat komentar, statistik, grafik, dan export.</p>
         </div>
-        <form action="{{ route('instagram.posts.sync') }}" method="POST">@csrf<button type="submit">Sinkronisasi Instagram</button></form>
     </div>
 
     <form class="panel filters" method="GET" action="{{ route('instagram.posts.index') }}">
@@ -47,7 +46,7 @@
                 </article>
             </div>
         @empty
-            <div class="col-12"><div class="panel empty">Belum ada postingan. Klik Sinkronisasi Instagram.</div></div>
+            <div class="col-12"><div class="panel empty">Belum ada postingan Instagram.</div></div>
         @endforelse
     </div>
 

@@ -222,7 +222,6 @@
                 <a href="{{ route('instagram.posts.index') }}" class="{{ request()->routeIs('instagram.posts.*') ? 'active' : '' }}"><i class="bi bi-instagram icon-instagram"></i> Instagram</a>
                 <a href="{{ route('twitter.tweets.index') }}" class="{{ request()->routeIs('twitter.tweets.*') ? 'active' : '' }}"><i class="bi bi-twitter icon-twitter"></i> Twitter</a>
                 <a href="{{ route('comments.index') }}" class="{{ request()->routeIs('comments.*') ? 'active' : '' }}"><i class="bi bi-chat-dots-fill icon-comments"></i> Comments</a>
-                <a href="{{ route('settings.api.index') }}" class="{{ request()->routeIs('settings.api.*') ? 'active' : '' }}"><i class="bi bi-gear-fill icon-settings"></i> Settings</a>
                 <div class="logout-sidebar-form">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf

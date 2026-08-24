@@ -8,7 +8,6 @@
             <h1>Postingan Twitter/X</h1>
             <p class="subtitle">Pilih tweet untuk melihat reply, statistik, grafik, dan export.</p>
         </div>
-        <form action="{{ route('twitter.tweets.sync') }}" method="POST">@csrf<button type="submit">Sinkronisasi Twitter</button></form>
     </div>
 
     <form class="panel filters" method="GET" action="{{ route('twitter.tweets.index') }}">
@@ -39,7 +38,7 @@
                 </article>
             </div>
         @empty
-            <div class="col-12"><div class="panel empty">Belum ada tweet. Klik Sinkronisasi Twitter setelah token dikonfigurasi.</div></div>
+            <div class="col-12"><div class="panel empty">Belum ada tweet Twitter/X.</div></div>
         @endforelse
     </div>
 

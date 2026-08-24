@@ -13,14 +13,6 @@
                 @csrf
                 <button type="submit">Tes Koneksi</button>
             </form>
-            <form action="{{ route('instagram.posts.sync') }}" method="POST">
-                @csrf
-                <button type="submit">Sinkronisasi Instagram</button>
-            </form>
-            <form action="{{ route('twitter.tweets.sync') }}" method="POST">
-                @csrf
-                <button type="submit">Sinkronisasi Twitter</button>
-            </form>
         </div>
     </div>
 
