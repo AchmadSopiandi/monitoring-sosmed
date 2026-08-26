@@ -71,16 +71,6 @@
             color: #195c60;
         }
 
-        .button.pdf-export {
-            background: #dc2626;
-            color: #ffffff;
-        }
-
-        .button.pdf-export:hover {
-            background: #b91c1c;
-            color: #ffffff;
-        }
-
         .logout-form {
             display: inline-flex;
             margin: 0;
@@ -101,8 +91,8 @@
         }
 
         .metric-card {
-            background: #ffffff;
-            border: 1px solid #e1e8f3;
+            background: var(--panel);
+            border: 1px solid var(--border);
             border-radius: 12px;
             box-shadow: 0 10px 24px rgba(15, 23, 42, .05);
             min-height: 116px;
@@ -166,8 +156,8 @@
         }
 
         .dashboard-panel {
-            background: #ffffff;
-            border: 1px solid #e1e8f3;
+            background: var(--panel);
+            border: 1px solid var(--border);
             border-radius: 14px;
             box-shadow: 0 10px 26px rgba(15, 23, 42, .05);
             padding: 18px;
@@ -258,8 +248,6 @@
                 <a href="{{ route('dashboard', ['period' => 'monthly']) }}" class="{{ $period === 'monthly' ? 'active' : '' }}">Bulanan</a>
                 <a href="{{ route('dashboard', ['period' => 'yearly']) }}" class="{{ $period === 'yearly' ? 'active' : '' }}">Tahunan</a>
             </div>
-            <a class="button excel" href="{{ route('reports.export.excel', ['period' => $period]) }}"><i class="bi bi-file-earmark-excel-fill"></i>Export Excel</a>
-            <a class="button pdf-export" href="{{ route('reports.export.pdf', ['period' => $period]) }}" target="_blank"><i class="bi bi-file-earmark-pdf-fill"></i>Download PDF</a>
         </div>
     </div>
 

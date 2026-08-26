@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Sentiment;
+use App\Models\InstagramComment;
+use App\Models\TweetComment;
 use App\Repositories\InstagramCommentRepository;
 use App\Repositories\TweetCommentRepository;
 use App\Services\ExportService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Collection;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -24,17 +27,18 @@ class ReportExportController extends Controller
     public function excel(Request $request): StreamedResponse
     {
         $filters = $this->validatedFilters($request);
-        $comments = $this->comments->filteredQuery($filters)->latest('commented_at')->get();
+        $comments = $this->commentsForExport($filters);
         $filename = 'laporan-social-monitoring-'.now()->format('Ymd-His').'.xls';
 
         return Response::streamDownload(function () use ($comments) {
             echo '<table border="1">';
-            echo '<thead><tr><th>Tanggal</th><th>Postingan</th><th>Username</th><th>Komentar</th><th>Like</th><th>Sentimen</th></tr></thead><tbody>';
+            echo '<thead><tr><th>Tanggal</th><th>Sumber</th><th>Postingan</th><th>Username</th><th>Komentar</th><th>Like</th><th>Sentimen</th></tr></thead><tbody>';
 
             foreach ($comments as $comment) {
                 echo '<tr>';
-                echo '<td>'.e(optional($comment->commented_at)->format('Y-m-d H:i:s')).'</td>';
-                echo '<td>'.e($comment->post?->title).'</td>';
+                echo '<td>'.e(optional($comment->commented_at ?? $comment->created_time)->format('Y-m-d H:i:s')).'</td>';
+                echo '<td>'.e($comment->source === 'twitter' ? 'Twitter/X' : 'Instagram').'</td>';
+                echo '<td>'.e($comment->source === 'twitter' ? str($comment->tweet?->display_text)->limit(120) : $comment->post?->title).'</td>';
                 echo '<td>'.e($comment->username).'</td>';
                 echo '<td>'.e($comment->comment).'</td>';
                 echo '<td>'.e($comment->like_count ?? '-').'</td>';
@@ -49,8 +53,8 @@ class ReportExportController extends Controller
     public function pdf(Request $request): View
     {
         $filters = $this->validatedFilters($request);
-        $comments = $this->comments->filteredQuery($filters)->latest('commented_at')->get();
-        $counts = $this->comments->countsBySentiment($filters);
+        $comments = $this->commentsForExport($filters);
+        $counts = $comments->countBy(fn (object $comment) => $this->exportService->sentimentName($comment));
 
         return view('reports.pdf', [
             'comments' => $comments,
@@ -136,8 +140,35 @@ class ReportExportController extends Controller
             'from' => ['nullable', 'date'],
             'to' => ['nullable', 'date', 'after_or_equal:from'],
             'sentiment' => ['nullable', 'in:Positif,Netral,Negatif'],
+            'source' => ['nullable', 'in:instagram,twitter'],
             'post_id' => ['nullable', 'exists:instagram_posts,id'],
             'search' => ['nullable', 'string', 'max:100'],
         ]);
+    }
+
+    private function commentsForExport(array $filters): Collection
+    {
+        $source = $filters['source'] ?? (! empty($filters['post_id']) ? 'instagram' : null);
+        $comments = collect();
+
+        if ($source !== 'twitter') {
+            $comments = $comments->merge(
+                $this->comments->filteredQuery($filters)->latest('commented_at')->get()
+                    ->each(fn (InstagramComment $comment) => $comment->setAttribute('source', 'instagram'))
+            );
+        }
+
+        if ($source !== 'instagram') {
+            $twitterFilters = $filters;
+            unset($twitterFilters['post_id']);
+            $comments = $comments->merge(
+                $this->tweetComments->filteredQuery($twitterFilters)->latest('commented_at')->get()
+                    ->each(fn (TweetComment $comment) => $comment->setAttribute('source', 'twitter'))
+            );
+        }
+
+        return $comments->sortByDesc(
+            fn (InstagramComment|TweetComment $comment) => $comment->commented_at ?? $comment->created_time ?? $comment->created_at
+        )->values();
     }
 }

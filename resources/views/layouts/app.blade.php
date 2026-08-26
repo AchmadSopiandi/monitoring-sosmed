@@ -12,11 +12,13 @@
             font-family: Arial, Helvetica, sans-serif;
             --bg: #f6f7fb;
             --panel: #ffffff;
-            --border: #d9dee8;
+            --border: #d5eeee;
             --text: #1f2937;
             --muted: #6b7280;
             --brand: #2563eb;
             --brand-dark: #1d4ed8;
+            --button: #0d9488;
+            --button-dark: #0f766e;
             --positive: #15803d;
             --neutral: #a16207;
             --negative: #b91c1c;
@@ -122,10 +124,12 @@
         .badge.positif { background: #dcfce7; color: var(--positive); }
         .badge.netral { background: #fef3c7; color: var(--neutral); }
         .badge.negatif { background: #fee2e2; color: var(--negative); }
+        .badge.source-instagram { background: #fce7f3; color: #db2777; }
+        .badge.source-twitter { background: #dbeafe; color: #1d4ed8; }
         .button, button {
             align-items: center;
             appearance: none;
-            background: var(--brand);
+            background: var(--button);
             border: 0;
             border-radius: 8px;
             color: #ffffff;
@@ -144,11 +148,11 @@
             white-space: nowrap;
         }
         .button:focus-visible, button:focus-visible, input:focus, select:focus, textarea:focus {
-            border-color: #93c5fd;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .16);
+            border-color: #5eead4;
+            box-shadow: 0 0 0 3px rgba(13, 148, 136, .16);
             outline: none;
         }
-        .button:hover, button:hover { background: var(--brand-dark); text-decoration: none; }
+        .button:hover, button:hover { background: var(--button-dark); text-decoration: none; }
         .button.secondary { background: #e5e7eb; color: var(--text); }
         .button.secondary:hover { background: #dbe3ef; color: var(--text); }
         .button.excel {

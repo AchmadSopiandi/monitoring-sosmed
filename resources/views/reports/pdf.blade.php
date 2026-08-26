@@ -20,7 +20,7 @@
         th { background: #f3f4f6; }
         canvas { max-height: 280px; max-width: 520px; }
         .actions { margin-bottom: 16px; text-align: right; }
-        button { background: #2563eb; border: 0; border-radius: 8px; color: #fff; cursor: pointer; font: inherit; font-weight: 700; padding: 10px 14px; }
+        button { background: #0d9488; border: 0; border-radius: 8px; color: #fff; cursor: pointer; font: inherit; font-weight: 700; padding: 10px 14px; }
 
         @media print {
             body { margin: 16px; }
@@ -69,6 +69,7 @@
         <thead>
             <tr>
                 <th>Tanggal</th>
+                <th>Sumber</th>
                 <th>Nama Postingan</th>
                 <th>Username</th>
                 <th>Komentar</th>
@@ -79,8 +80,9 @@
         <tbody>
             @forelse ($comments as $comment)
                 <tr>
-                    <td>{{ optional($comment->commented_at)->timezone(config('app.timezone'))->format('d M Y H:i') }}</td>
-                    <td>{{ $comment->post?->title ?? '-' }}</td>
+                    <td>{{ optional($comment->commented_at ?? $comment->created_time)->timezone(config('app.timezone'))->format('d M Y H:i') }}</td>
+                    <td>{{ $comment->source === 'twitter' ? 'Twitter/X' : 'Instagram' }}</td>
+                    <td>{{ $comment->source === 'twitter' ? str($comment->tweet?->display_text)->limit(120) : $comment->post?->title ?? '-' }}</td>
                     <td>{{ $comment->username }}</td>
                     <td>{{ $comment->comment }}</td>
                     <td>{{ $comment->like_count ?? '-' }}</td>
@@ -88,7 +90,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6">Belum ada komentar untuk filter ini.</td>
+                    <td colspan="7">Belum ada komentar untuk filter ini.</td>
                 </tr>
             @endforelse
         </tbody>

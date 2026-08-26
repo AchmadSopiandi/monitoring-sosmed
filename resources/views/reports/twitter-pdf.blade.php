@@ -15,7 +15,7 @@
         th { background: #f3f4f6; }
         canvas { max-height: 280px; max-width: 520px; }
         .actions { margin-bottom: 16px; text-align: right; }
-        button { background: #2563eb; border: 0; border-radius: 8px; color: #fff; cursor: pointer; font: inherit; font-weight: 700; padding: 10px 14px; }
+        button { background: #0d9488; border: 0; border-radius: 8px; color: #fff; cursor: pointer; font: inherit; font-weight: 700; padding: 10px 14px; }
         @media print { .actions { display: none; } }
     </style>
 </head>
