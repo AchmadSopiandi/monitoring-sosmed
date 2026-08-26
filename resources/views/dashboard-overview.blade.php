@@ -11,10 +11,8 @@
 
         .dashboard-hero {
             align-items: center;
-            background:
-                linear-gradient(135deg, rgba(15, 148, 214, .14), rgba(46, 230, 166, .08)),
-                #ffffff;
-            border: 1px solid #dbe5f2;
+            background: #1f6f73;
+            border: 1px solid #195c60;
             border-radius: 14px;
             box-shadow: 0 16px 40px rgba(15, 23, 42, .06);
             display: flex;
@@ -24,12 +22,14 @@
         }
 
         .dashboard-hero h1 {
-            color: #0f172a;
+            color: #ffffff;
             font-size: 28px;
             font-weight: 800;
             letter-spacing: .1px;
             margin-bottom: 6px;
         }
+
+        .dashboard-hero .subtitle { color: #e0ffff; }
 
         .hero-actions {
             align-items: center;
@@ -40,8 +40,8 @@
         }
 
         .period-filter {
-            background: #eef4fb;
-            border: 1px solid #dbe5f2;
+            background: rgba(255, 255, 255, .16);
+            border: 1px solid rgba(255, 255, 255, .28);
             border-radius: 10px;
             display: inline-flex;
             gap: 4px;
@@ -51,7 +51,7 @@
         .period-filter a {
             align-items: center;
             border-radius: 7px;
-            color: #526174;
+            color: #e8ffff;
             display: inline-flex;
             font-size: 13px;
             font-weight: 700;
@@ -60,15 +60,25 @@
         }
 
         .period-filter a:hover {
-            background: rgba(255, 255, 255, .7);
-            color: #0f172a;
+            background: rgba(255, 255, 255, .18);
+            color: #ffffff;
             text-decoration: none;
         }
 
         .period-filter a.active {
             background: #ffffff;
-            box-shadow: 0 4px 10px rgba(15, 23, 42, .08);
-            color: #0f94d6;
+            box-shadow: 0 4px 10px rgba(12, 78, 81, .18);
+            color: #195c60;
+        }
+
+        .button.pdf-export {
+            background: #dc2626;
+            color: #ffffff;
+        }
+
+        .button.pdf-export:hover {
+            background: #b91c1c;
+            color: #ffffff;
         }
 
         .logout-form {
@@ -249,6 +259,7 @@
                 <a href="{{ route('dashboard', ['period' => 'yearly']) }}" class="{{ $period === 'yearly' ? 'active' : '' }}">Tahunan</a>
             </div>
             <a class="button excel" href="{{ route('reports.export.excel', ['period' => $period]) }}"><i class="bi bi-file-earmark-excel-fill"></i>Export Excel</a>
+            <a class="button pdf-export" href="{{ route('reports.export.pdf', ['period' => $period]) }}" target="_blank"><i class="bi bi-file-earmark-pdf-fill"></i>Download PDF</a>
         </div>
     </div>
 

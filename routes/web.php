@@ -16,6 +16,22 @@ Route::get('/assets/login-pattern.png', function () {
     ]);
 })->name('login.pattern');
 
+Route::get('/assets/login-background.png', function () {
+    return response()->file(resource_path('image/login-background.png'), [
+        'Content-Type' => 'image/png',
+        'Cache-Control' => 'public, max-age=31536000, immutable',
+    ]);
+})->name('login.background');
+
+Route::get('/assets/{logo}', function (string $logo) {
+    abort_unless(in_array($logo, ['logo-bapenda.png', 'logo-itenas.png'], true), 404);
+
+    return response()->file(resource_path('image/'.$logo), [
+        'Content-Type' => 'image/png',
+        'Cache-Control' => 'public, max-age=31536000, immutable',
+    ]);
+})->name('login.logo');
+
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.store');

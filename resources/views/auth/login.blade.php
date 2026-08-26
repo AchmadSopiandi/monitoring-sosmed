@@ -3,164 +3,72 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - SIMAK-BAPENDA</title>
+    <title>Masuk - SIMAK-BAPENDA</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
     <style>
-        :root {
-            color-scheme: light;
-            font-family: Arial, Helvetica, sans-serif;
-            --brand: #0f94d6;
-            --brand-dark: #0b75aa;
-            --text: #172033;
-            --muted: #667085;
-            --border: #dbe5f2;
-        }
-
+        :root { color-scheme: light; font-family: Arial, Helvetica, sans-serif; --teal: #1f6f73; --teal-dark: #195c60; --text: #253041; --muted: #718096; --surface: #f5f8fc; --border: #dbe4ef; }
         * { box-sizing: border-box; }
-        body {
-            background:
-                linear-gradient(rgba(246, 249, 252, .18), rgba(237, 244, 251, .18)),
-                url('{{ route('login.pattern') }}') center / 280px auto repeat fixed;
-            color: var(--text);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0;
-            min-height: 100vh;
-            padding: 24px;
-            position: relative;
-        }
-
-        .login-card {
-            background: rgba(255, 255, 255, .94);
-            backdrop-filter: blur(6px);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            box-shadow: 0 18px 46px rgba(15, 23, 42, .10);
-            max-width: 420px;
-            padding: 28px;
-            position: relative;
-            width: 100%;
-            z-index: 1;
-        }
-
-        .brand {
-            align-items: center;
-            display: flex;
-            font-size: 20px;
-            font-weight: 800;
-            gap: 10px;
-            margin-bottom: 22px;
-        }
-
-        .brand i { color: #2ee6a6; }
-        .brand span span { color: var(--brand); }
-        h1 { font-size: 26px; margin: 0 0 6px; }
-        .subtitle { color: var(--muted); margin: 0 0 22px; }
-        form { display: grid; gap: 14px; }
-        label {
-            color: #111827;
-            display: grid;
-            font-size: 14px;
-            font-weight: 700;
-            gap: 8px;
-        }
-
-        input {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font: inherit;
-            min-height: 44px;
-            padding: 0 12px;
-            width: 100%;
-        }
-
-        input:focus {
-            border-color: #93c5fd;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, .16);
-            outline: none;
-        }
-
-        .remember {
-            align-items: center;
-            color: var(--muted);
-            display: flex;
-            font-size: 14px;
-            font-weight: 600;
-            gap: 9px;
-        }
-
-        .remember input {
-            min-height: auto;
-            width: auto;
-        }
-
-        button {
-            align-items: center;
-            background: var(--brand);
-            border: 0;
-            border-radius: 8px;
-            color: #ffffff;
-            cursor: pointer;
-            display: inline-flex;
-            font: inherit;
-            font-weight: 800;
-            gap: 8px;
-            justify-content: center;
-            min-height: 44px;
-            padding: 0 16px;
-        }
-
-        button:hover { background: var(--brand-dark); }
-        .error, .alert {
-            border-radius: 8px;
-            font-size: 14px;
-            margin-bottom: 16px;
-            padding: 12px 14px;
-        }
-
+        body { background: var(--surface); color: var(--text); margin: 0; min-height: 100vh; }
+        .login-page { display: grid; grid-template-columns: minmax(420px, 1.05fr) minmax(480px, 1fr); min-height: 100vh; }
+        .welcome-panel { background: radial-gradient(circle at 100% 0%, rgba(117, 214, 190, .28), transparent 35%), linear-gradient(145deg, #195c60 0%, var(--teal) 55%, #164f60 100%); color: #fff; display: flex; flex-direction: column; justify-content: center; overflow: hidden; padding: clamp(42px, 8vw, 96px); position: relative; }
+        .welcome-panel::after { border: 1px solid rgba(255, 255, 255, .12); border-radius: 50%; content: ""; height: 460px; position: absolute; right: -220px; top: -160px; width: 460px; }
+        .welcome-panel h1 { font-size: clamp(38px, 4.6vw, 62px); letter-spacing: -.8px; line-height: 1.08; margin: 0; max-width: 580px; position: relative; z-index: 1; }
+        .welcome-panel h1 span { color: #b8f1ed; display: block; font-size: .56em; letter-spacing: 0; line-height: 1.2; margin-top: 12px; }
+        .welcome-panel p { color: #d6f3f2; font-size: 17px; font-weight: 600; line-height: 1.45; margin: 24px 0 0; max-width: 460px; position: relative; z-index: 1; }
+        .partner-logos { display: flex; gap: 20px; margin-bottom: 42px; position: relative; z-index: 1; }
+        .partner-logo { align-items: center; background: #fff; border-radius: 18px; box-shadow: 0 10px 22px rgba(7, 47, 50, .16); display: flex; height: 112px; justify-content: center; padding: 12px; width: 112px; }
+        .partner-logo img { display: block; max-height: 100%; max-width: 100%; object-fit: contain; }
+        .form-panel { align-items: center; display: flex; justify-content: center; padding: 40px; }
+        .login-card { max-width: 480px; width: 100%; }
+        .form-eyebrow { color: var(--teal); font-size: 15px; font-weight: 800; letter-spacing: .4px; margin: 0 0 22px; text-align: center; text-transform: uppercase; }
+        .login-card h2 { font-size: 37px; letter-spacing: -.5px; margin: 0; text-align: center; }
+        .login-card > .subtitle { color: var(--muted); font-size: 16px; margin: 14px 0 32px; text-align: center; }
+        form { display: grid; gap: 22px; }
+        label { color: #344054; display: grid; font-size: 15px; gap: 8px; }
+        input[type="email"], input[type="password"] { background: #fff; border: 1px solid var(--border); border-radius: 9px; color: var(--text); font: inherit; min-height: 54px; padding: 0 15px; width: 100%; }
+        input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(31, 111, 115, .16); outline: none; }
+        .remember { align-items: center; color: #475467; display: flex; font-size: 15px; gap: 10px; margin-top: -3px; }
+        .remember input { accent-color: var(--teal); height: 18px; margin: 0; width: 18px; }
+        button { background: var(--teal); border: 0; border-radius: 9px; color: #fff; cursor: pointer; font: inherit; font-weight: 800; min-height: 56px; transition: background .15s ease, transform .15s ease; }
+        button:hover { background: var(--teal-dark); transform: translateY(-1px); }
+        .login-note { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 26px 0 0; text-align: center; }
+        .error, .alert { border-radius: 9px; font-size: 14px; margin-bottom: 20px; padding: 13px 14px; }
         .error { background: #fee2e2; color: #991b1b; }
         .alert { background: #dcfce7; color: #166534; }
+        @media (max-width: 800px) { .login-page { display: block; } .welcome-panel { min-height: 300px; padding: 44px 28px; } .partner-logos { margin-bottom: 26px; } .partner-logo { height: 88px; width: 88px; } .welcome-panel h1 { font-size: 38px; } .welcome-panel p { font-size: 15px; margin-top: 14px; } .form-panel { padding: 44px 24px; } }
     </style>
 </head>
 <body>
-    <main class="login-card">
-        <div class="brand">
-            <i class="bi bi-pie-chart-fill"></i>
-            <span>SIMAK<span>-BAPENDA</span></span>
-        </div>
-
-        <h1>Login Dashboard</h1>
-        <p class="subtitle">Masuk untuk mengakses monitoring sosial media.</p>
-
-        @if (session('success'))
-            <div class="alert">{{ session('success') }}</div>
-        @endif
-
-        @if ($errors->any())
-            <div class="error">{{ $errors->first() }}</div>
-        @endif
-
-        <form method="POST" action="{{ route('login.store') }}">
-            @csrf
-            <label>
-                Email
-                <input type="email" name="email" value="{{ old('email') }}" autocomplete="email" required autofocus>
-            </label>
-
-            <label>
-                Password
-                <input type="password" name="password" autocomplete="current-password" required>
-            </label>
-
-            <label class="remember">
-                <input type="checkbox" name="remember" value="1">
-                Ingat saya
-            </label>
-
-            <button type="submit"><i class="bi bi-box-arrow-in-right"></i> Masuk</button>
-        </form>
+    <main class="login-page">
+        <section class="welcome-panel" aria-label="Informasi aplikasi">
+            <div class="partner-logos" aria-label="Logo Bapenda Kota Bandung dan Itenas">
+                <span class="partner-logo"><img src="{{ route('login.logo', ['logo' => 'logo-bapenda.png']) }}" alt="Bapenda Kota Bandung"></span>
+                <span class="partner-logo"><img src="{{ route('login.logo', ['logo' => 'logo-itenas.png']) }}" alt="Itenas"></span>
+            </div>
+            <h1>SIMAK-BAPENDA <span>Sistem Informasi Monitoring Analisis Komentar</span></h1>
+            <p>Pantau percakapan Instagram dan Twitter/X Bapenda Kota Bandung dalam satu dashboard.</p>
+        </section>
+        <section class="form-panel">
+            <div class="login-card">
+                <p class="form-eyebrow">Panel Admin</p>
+                <h2>Masuk ke akun anda</h2>
+                <p class="subtitle">Akses dashboard monitoring sosial media.</p>
+                @if (session('success'))
+                    <div class="alert">{{ session('success') }}</div>
+                @endif
+                @if ($errors->any())
+                    <div class="error">{{ $errors->first() }}</div>
+                @endif
+                <form method="POST" action="{{ route('login.store') }}">
+                    @csrf
+                    <label>Email<input type="email" name="email" value="{{ old('email') }}" autocomplete="email" required autofocus></label>
+                    <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+                    <label class="remember"><input type="checkbox" name="remember" value="1"> Ingat saya</label>
+                    <button type="submit"><i class="bi bi-box-arrow-in-right"></i> Masuk</button>
+                </form>
+                <p class="login-note">Khusus untuk admin yang terdaftar.</p>
+            </div>
+        </section>
     </main>
 </body>
 </html>
