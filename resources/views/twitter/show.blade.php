@@ -3,6 +3,17 @@
 @section('title', 'Detail Tweet Twitter/X')
 
 @section('content')
+    <style>
+        .detail-filters { grid-template-columns: repeat(4, minmax(150px, 1fr)); }
+        .detail-filters .wide { grid-column: span 2; }
+        .detail-filters .actions { align-items: center; grid-column: span 2; justify-content: space-between; }
+        .detail-filters .filter-actions, .detail-filters .export-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 8px; }
+        .detail-filters .actions .button, .detail-filters .actions button { min-height: 40px; }
+        .detail-chart-panel { height: 440px; }
+        .detail-chart-panel canvas { height: 300px !important; max-height: 300px; }
+        @media (max-width: 1100px) { .detail-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .detail-filters .wide { grid-column: span 2; } }
+        @media (max-width: 800px) { .detail-filters { grid-template-columns: 1fr; } .detail-filters .wide, .detail-filters .actions { grid-column: auto; } .detail-filters .actions { justify-content: flex-start; } .detail-chart-panel { height: auto; min-height: 400px; } }
+    </style>
     <div class="page-header">
         <div>
             <h1>{{ str($tweet->display_text ?: 'Detail Tweet')->limit(90) }}</h1>
@@ -25,7 +36,7 @@
         @endif
     </section>
 
-    <form class="panel filters" method="GET" action="{{ route('twitter.tweets.show', $tweet) }}">
+    <form class="panel filters detail-filters" method="GET" action="{{ route('twitter.tweets.show', $tweet) }}">
         <label>
             Periode
             <select name="period">
@@ -58,8 +69,14 @@
             <input type="search" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Username atau isi reply">
         </label>
         <div class="actions">
-            <button type="submit">Filter</button>
-            <a class="button secondary" href="{{ route('twitter.tweets.show', $tweet) }}">Reset</a>
+            <div class="filter-actions">
+                <button type="submit">Filter</button>
+                <a class="button secondary" href="{{ route('twitter.tweets.show', $tweet) }}">Reset</a>
+            </div>
+            <div class="export-actions">
+                <a class="button excel" href="{{ route('reports.twitter.export.excel', array_merge(request()->query(), ['tweet_id' => $tweet->id])) }}"><i class="bi bi-file-earmark-excel-fill"></i> Download Excel</a>
+                <a class="button pdf-export" href="{{ route('reports.twitter.export.pdf', array_merge(request()->query(), ['tweet_id' => $tweet->id])) }}" target="_blank"><i class="bi bi-file-earmark-pdf-fill"></i> Download PDF</a>
+            </div>
         </div>
     </form>
 
@@ -72,7 +89,7 @@
 
     <div class="row g-3 mb-4">
         <div class="col-lg-6">
-            <section class="panel shadow-sm">
+            <section class="panel shadow-sm detail-chart-panel">
                 <h1>Pie Chart Sentimen</h1>
                 <canvas id="sentimentPie"></canvas>
                 <div class="row g-2 mt-3">
@@ -82,12 +99,7 @@
                 </div>
             </section>
         </div>
-        <div class="col-lg-6"><section class="panel shadow-sm"><h1>Bar Chart Jumlah Reply</h1><canvas id="replyBar"></canvas></section></div>
-    </div>
-
-    <div class="report-actions">
-        <a class="button excel" href="{{ route('reports.twitter.export.excel', array_merge(request()->query(), ['tweet_id' => $tweet->id])) }}"><i class="bi bi-file-earmark-excel-fill"></i>Export Excel</a>
-        <a class="button secondary" href="{{ route('reports.twitter.export.pdf', array_merge(request()->query(), ['tweet_id' => $tweet->id])) }}" target="_blank">Export PDF</a>
+        <div class="col-lg-6"><section class="panel shadow-sm detail-chart-panel"><h1>Bar Chart Jumlah Reply</h1><canvas id="replyBar"></canvas></section></div>
     </div>
 
     <section class="panel">

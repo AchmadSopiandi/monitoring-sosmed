@@ -32,9 +32,21 @@
         button { background: var(--teal); border: 0; border-radius: 9px; color: #fff; cursor: pointer; font: inherit; font-weight: 800; min-height: 56px; transition: background .15s ease, transform .15s ease; }
         button:hover { background: var(--teal-dark); transform: translateY(-1px); }
         .login-note { color: var(--muted); font-size: 14px; line-height: 1.5; margin: 26px 0 0; text-align: center; }
-        .error, .alert { border-radius: 9px; font-size: 14px; margin-bottom: 20px; padding: 13px 14px; }
-        .error { background: #fee2e2; color: #991b1b; }
-        .alert { background: #dcfce7; color: #166534; }
+        .notification-stack { align-items: center; background: rgba(15, 23, 42, .18); display: flex; inset: 0; justify-content: center; padding: 16px; position: fixed; z-index: 1000; }
+        .notification { align-items: center; animation: notification-in .35s ease-out both; border: 1px solid transparent; border-radius: 14px; box-shadow: 0 18px 45px rgba(31, 41, 55, .2); display: flex; flex-direction: column; font-size: 14px; gap: 12px; max-width: 515px; min-height: 270px; padding: 24px; position: relative; text-align: center; width: 100%; }
+        .notification.is-leaving { animation: notification-out .25s ease-in forwards; }
+        .notification > i { align-items: center; background: #d1fad0; border-radius: 50%; color: #58ed38; display: flex; font-size: 48px; height: 124px; justify-content: center; margin-top: -8px; width: 124px; }
+        .notification-content { line-height: 1.45; }
+        .notification.success .notification-content { color: #202020; font-size: 22px; font-weight: 500; text-transform: uppercase; }
+        .notification.success .notification-content::after { color: #999; content: "Selamat datang di sistem"; display: block; font-size: 14px; margin-top: 8px; text-transform: none; }
+        .notification-close { background: transparent; border: 0; color: currentColor; cursor: pointer; font-size: 22px; line-height: 1; min-height: auto; opacity: .45; padding: 0; position: absolute; right: 14px; top: 10px; }
+        .notification-close:hover { background: transparent; opacity: 1; transform: none; }
+        .notification.success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+        .notification.error { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+        .notification.info { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+        @keyframes notification-in { from { opacity: 0; transform: scale(.88) translateY(14px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes notification-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(.92); } }
+        @media (prefers-reduced-motion: reduce) { .notification { animation: none; } }
         @media (max-width: 800px) { .login-page { display: block; } .welcome-panel { min-height: 300px; padding: 44px 28px; } .partner-logos { margin-bottom: 26px; } .partner-logo { height: 88px; width: 88px; } .welcome-panel h1 { font-size: 38px; } .welcome-panel p { font-size: 15px; margin-top: 14px; } .form-panel { padding: 44px 24px; } }
     </style>
 </head>
@@ -53,12 +65,6 @@
                 <p class="form-eyebrow">Panel Admin</p>
                 <h2>Masuk ke akun anda</h2>
                 <p class="subtitle">Akses dashboard monitoring sosial media.</p>
-                @if (session('success'))
-                    <div class="alert">{{ session('success') }}</div>
-                @endif
-                @if ($errors->any())
-                    <div class="error">{{ $errors->first() }}</div>
-                @endif
                 <form method="POST" action="{{ route('login.store') }}">
                     @csrf
                     <label>Email<input type="email" name="email" value="{{ old('email') }}" autocomplete="email" required autofocus></label>
@@ -70,5 +76,34 @@
             </div>
         </section>
     </main>
+    @if (session('success') || $errors->any())
+    <div class="notification-stack" aria-live="polite" aria-atomic="true">
+        @if (session('success'))
+            <div class="notification success" role="status">
+                <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                <span class="notification-content">{{ session('success') }}</span>
+                <button type="button" class="notification-close" aria-label="Tutup notifikasi">&times;</button>
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="notification error" role="alert">
+                <i class="bi bi-x-circle-fill" aria-hidden="true"></i>
+                <span class="notification-content">{{ $errors->first() }}</span>
+                <button type="button" class="notification-close" aria-label="Tutup notifikasi">&times;</button>
+            </div>
+        @endif
+    </div>
+    @endif
+    <script>
+        document.querySelectorAll('.notification').forEach((notification) => {
+            const dismiss = () => {
+                notification.classList.add('is-leaving');
+                notification.addEventListener('animationend', () => notification.remove(), { once: true });
+            };
+
+            notification.querySelector('.notification-close').addEventListener('click', dismiss);
+            window.setTimeout(dismiss, 4500);
+        });
+    </script>
 </body>
 </html>

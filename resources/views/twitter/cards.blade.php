@@ -29,7 +29,7 @@
                             <div><i class="bi bi-calendar"></i> {{ optional($tweet->posted_at ?: $tweet->published_at)->timezone(config('app.timezone'))->format('d M Y H:i') }} WIB</div>
                         </div>
                         <div class="actions mt-auto">
-                            <a class="button" href="{{ route('twitter.tweets.show', $tweet) }}">Lihat Reply</a>
+                            <a class="button" href="{{ route('twitter.tweets.show', $tweet) }}">Lihat Tweet</a>
                             @if ($tweet->permalink)
                                 <a class="button secondary" href="{{ $tweet->permalink }}" target="_blank">Buka Tweet</a>
                             @endif

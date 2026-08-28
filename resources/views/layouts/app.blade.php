@@ -19,8 +19,8 @@
             --brand-dark: #1d4ed8;
             --button: #0d9488;
             --button-dark: #0f766e;
-            --positive: #15803d;
-            --neutral: #a16207;
+            --positive: #2563eb;
+            --neutral: #16a34a;
             --negative: #b91c1c;
         }
 
@@ -109,6 +109,27 @@
         .charts { grid-template-columns: minmax(260px, .8fr) minmax(360px, 1.2fr); margin-bottom: 24px; }
         .chart-line { margin-bottom: 24px; }
         .card, .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+        .pagination { margin-top: 18px; }
+        .pagination nav { align-items: center; display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; }
+        .pagination nav > div:first-child { display: none; }
+        .pagination nav > div:last-child > div:first-child { display: none; }
+        .pagination nav > div { align-items: center; display: flex; gap: 4px; }
+        .pagination a, .pagination span {
+            align-items: center;
+            border: 1px solid #d5dee9;
+            border-radius: 6px;
+            display: inline-flex;
+            font-size: 13px;
+            justify-content: center;
+            line-height: 1;
+            min-height: 38px;
+            min-width: 38px;
+            padding: 0 11px;
+        }
+        .pagination svg { display: block; height: 16px !important; width: 16px !important; }
+        .pagination a:hover { background: #eff6ff; text-decoration: none; }
+        .pagination span[aria-current="page"] { background: #2563eb; border-color: #2563eb; color: #ffffff; }
+        .pagination span[aria-disabled="true"] { color: #98a2b3; }
         .stat-card { color: inherit; display: block; transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease; }
         .stat-card:hover { border-color: #b8c2d6; box-shadow: 0 8px 22px rgba(31, 41, 55, .08); text-decoration: none; transform: translateY(-1px); }
         .stat-label { color: var(--muted); font-size: 14px; margin-bottom: 10px; }
@@ -121,8 +142,8 @@
         th, td { border-bottom: 1px solid var(--border); padding: 14px 12px; text-align: left; vertical-align: top; }
         th { color: var(--muted); font-size: 13px; text-transform: uppercase; }
         .badge { border-radius: 999px; display: inline-block; font-size: 12px; font-weight: 700; padding: 5px 10px; }
-        .badge.positif { background: #dcfce7; color: var(--positive); }
-        .badge.netral { background: #fef3c7; color: var(--neutral); }
+        .badge.positif { background: #dbeafe; color: var(--positive); }
+        .badge.netral { background: #dcfce7; color: var(--neutral); }
         .badge.negatif { background: #fee2e2; color: var(--negative); }
         .badge.source-instagram { background: #fce7f3; color: #db2777; }
         .badge.source-twitter { background: #dbeafe; color: #1d4ed8; }
@@ -164,6 +185,8 @@
             box-shadow: 0 8px 18px rgba(34, 197, 94, .22);
             color: #ffffff;
         }
+        .button.pdf-export { background: #dc2626; color: #ffffff; }
+        .button.pdf-export:hover { background: #b91c1c; color: #ffffff; }
         button.danger { background: var(--negative); }
         .actions { align-items: center; display: flex; flex-wrap: wrap; gap: 8px; }
         .actions form { display: inline-flex; margin: 0; }
@@ -203,9 +226,25 @@
         }
         select { cursor: pointer; }
         textarea { min-height: 130px; padding: 11px 12px; resize: vertical; }
-        .error, .alert { border-radius: 8px; margin-bottom: 16px; padding: 12px 14px; }
-        .error { background: #fee2e2; color: #991b1b; }
-        .alert { background: #dcfce7; color: #166534; }
+        .notification-stack { align-items: center; background: rgba(15, 23, 42, .18); display: flex; inset: 0; justify-content: center; padding: 16px; position: fixed; z-index: 1000; }
+        .notification { align-items: center; animation: notification-in .35s ease-out both; border: 1px solid transparent; border-radius: 14px; box-shadow: 0 18px 45px rgba(31, 41, 55, .2); display: flex; flex-direction: column; gap: 12px; max-width: 515px; min-height: 270px; padding: 24px; position: relative; text-align: center; width: 100%; }
+        .notification.is-leaving { animation: notification-out .25s ease-in forwards; }
+        .notification > i { align-items: center; background: #d1fad0; border-radius: 50%; color: #58ed38; display: flex; font-size: 48px; height: 124px; justify-content: center; margin-top: -8px; width: 124px; }
+        .notification.error > i { background: #fee2e2; color: #ef4444; }
+        .notification.warning > i { background: #fef3c7; color: #f59e0b; }
+        .notification.info > i { background: #dbeafe; color: #3b82f6; }
+        .notification-content { line-height: 1.45; }
+        .notification.success .notification-content { color: #202020; font-size: 22px; font-weight: 500; text-transform: uppercase; }
+        .notification.success .notification-content::after { color: #999; content: "Selamat datang di sistem"; display: block; font-size: 14px; margin-top: 8px; text-transform: none; }
+        .notification-close { background: transparent; border: 0; color: currentColor; cursor: pointer; font-size: 22px; line-height: 1; min-height: auto; opacity: .45; padding: 0; position: absolute; right: 14px; top: 10px; }
+        .notification-close:hover { background: transparent; opacity: 1; }
+        .notification.success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+        .notification.error { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+        .notification.warning { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+        .notification.info { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+        @keyframes notification-in { from { opacity: 0; transform: scale(.88) translateY(14px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        @keyframes notification-out { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(.92); } }
+        @media (prefers-reduced-motion: reduce) { .notification { animation: none; } }
         .empty { color: var(--muted); padding: 24px 12px; text-align: center; }
         .pagination { margin-top: 18px; }
         .muted { color: var(--muted); }
@@ -249,18 +288,41 @@
         </aside>
 
         <main class="content">
-            @if (session('success'))
-                <div class="alert">{{ session('success') }}</div>
-            @endif
-
-            @if (session('error'))
-                <div class="error">{{ session('error') }}</div>
-            @endif
-
             @yield('content')
         </main>
     </div>
+    @if (session('success') || session('error') || session('warning') || session('info') || session('status') || $errors->any())
+    <div class="notification-stack" aria-live="polite" aria-atomic="true">
+        @foreach (['success' => 'check-circle-fill', 'error' => 'x-circle-fill', 'warning' => 'exclamation-triangle-fill', 'info' => 'info-circle-fill', 'status' => 'info-circle-fill'] as $type => $icon)
+            @if (session($type))
+                <div class="notification {{ $type === 'status' ? 'info' : $type }}" role="{{ $type === 'error' ? 'alert' : 'status' }}">
+                    <i class="bi bi-{{ $icon }}" aria-hidden="true"></i>
+                    <span class="notification-content">{{ session($type) }}</span>
+                    <button type="button" class="notification-close" aria-label="Tutup notifikasi">&times;</button>
+                </div>
+            @endif
+        @endforeach
+        @if ($errors->any())
+            <div class="notification error" role="alert">
+                <i class="bi bi-x-circle-fill" aria-hidden="true"></i>
+                <span class="notification-content">{{ $errors->first() }}</span>
+                <button type="button" class="notification-close" aria-label="Tutup notifikasi">&times;</button>
+            </div>
+        @endif
+    </div>
+    @endif
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.notification').forEach((notification) => {
+            const dismiss = () => {
+                notification.classList.add('is-leaving');
+                notification.addEventListener('animationend', () => notification.remove(), { once: true });
+            };
+
+            notification.querySelector('.notification-close').addEventListener('click', dismiss);
+            window.setTimeout(dismiss, 4500);
+        });
+    </script>
     @yield('scripts')
 </body>
 </html>
