@@ -3,15 +3,23 @@
 @section('title', 'Data Komentar')
 
 @section('content')
+    <style>
+        .comments-filters { grid-template-columns: repeat(6, minmax(120px, 1fr)); }
+        @media (max-width: 1100px) { .comments-filters { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+        @media (max-width: 800px) { .comments-filters { grid-template-columns: 1fr; } }
+    </style>
     <div class="page-header">
         <div>
             <h1>Data Komentar</h1>
-            <p class="subtitle">Cari dan filter komentar Instagram yang sudah disimpan.</p>
+            <p class="subtitle">Pantau seluruh komentar Instagram yang sudah disimpan.</p>
         </div>
-        <a class="button" href="{{ route('instagram.posts.index') }}">Ambil Komentar</a>
+        <div class="page-header-actions">
+            <a class="button excel" href="{{ route('reports.export.excel', $filters) }}"><i class="bi bi-file-earmark-excel-fill"></i> Download Excel</a>
+            <a class="button pdf-export" href="{{ route('reports.export.pdf', $filters) }}" target="_blank"><i class="bi bi-file-earmark-pdf-fill"></i> Download PDF</a>
+        </div>
     </div>
 
-    <form class="panel filters" method="GET" action="{{ route('comments.index') }}">
+    <form class="panel filters comments-filters" method="GET" action="{{ route('comments.index') }}">
         <label>
             Periode
             <select name="period">

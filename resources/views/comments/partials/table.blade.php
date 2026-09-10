@@ -2,6 +2,9 @@
     <table>
         <thead>
             <tr>
+                @unless ($detail ?? false)
+                    <th>Sumber</th>
+                @endunless
                 <th>Username</th>
                 <th>Komentar</th>
                 @unless ($detail ?? false)
@@ -18,6 +21,11 @@
         <tbody>
             @forelse ($comments as $comment)
                 <tr>
+                    @unless ($detail ?? false)
+                        <td>
+                            <span class="badge source-instagram"><i class="bi bi-instagram"></i> Instagram</span>
+                        </td>
+                    @endunless
                     <td>{{ $comment->username }}</td>
                     <td>{{ $comment->comment }}</td>
                     @unless ($detail ?? false)
@@ -30,7 +38,7 @@
                         </td>
                         <td>{{ $comment->like_count ?? '-' }}</td>
                     @endunless
-                    <td>{{ optional($comment->commented_at)->timezone(config('app.timezone'))->format('d M Y H:i') }} WIB</td>
+                    <td>{{ optional($comment->commented_at ?? $comment->created_time)->timezone(config('app.timezone'))->format('d M Y H:i') }} WIB</td>
                     <td>
                         @php($sentimentName = $comment->getRawOriginal('sentiment') ?: 'Netral')
                         <span class="badge {{ strtolower($sentimentName) }}">
@@ -40,14 +48,14 @@
                     @unless ($detail ?? false)
                         <td>
                             <div class="actions">
-                                <a class="button secondary" href="{{ route('comments.show', $comment) }}">Detail</a>
+                                <a class="button secondary" href="{{ route('comments.show', ['comment' => $comment, 'source' => 'instagram']) }}">Detail</a>
                             </div>
                         </td>
                     @endunless
                 </tr>
             @empty
                 <tr>
-                    <td class="empty" colspan="{{ ($detail ?? false) ? 4 : 7 }}">Belum ada komentar.</td>
+                    <td class="empty" colspan="{{ ($detail ?? false) ? 4 : 8 }}">Belum ada komentar.</td>
                 </tr>
             @endforelse
         </tbody>

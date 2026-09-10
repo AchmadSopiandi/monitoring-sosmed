@@ -88,6 +88,7 @@ class InstagramCommentRepository
             'today' => [$today->copy()->startOfDay(), $today->copy()->endOfDay()],
             'weekly' => [$today->copy()->startOfWeek(), $today->copy()->endOfWeek()],
             'monthly' => [$today->copy()->startOfMonth(), $today->copy()->endOfMonth()],
+            'yearly' => [$today->copy()->startOfYear(), $today->copy()->endOfYear()],
             'custom' => $this->customDateRange($filters),
             default => null,
         };

@@ -23,11 +23,13 @@ class InstagramPostController extends Controller
     ) {
     }
 
-    public function index(Request $request): View
+    public function index(Request $request, InstagramService $instagram): View
     {
         $filters = $request->validate([
             'search' => ['nullable', 'string', 'max:100'],
         ]);
+
+        $this->syncPostsFromInstagram($instagram);
 
         return view('instagram.cards', [
             'posts' => $this->posts->paginate($filters),
@@ -35,7 +37,7 @@ class InstagramPostController extends Controller
         ]);
     }
 
-    public function show(Request $request, InstagramPost $instagramPost): View
+    public function show(Request $request, InstagramPost $instagramPost, InstagramService $instagram): View
     {
         $filters = $request->validate([
             'period' => ['nullable', 'in:today,weekly,monthly,custom'],
@@ -46,6 +48,21 @@ class InstagramPostController extends Controller
         ]);
 
         $filters['post_id'] = (string) $instagramPost->id;
+
+        try {
+            $imported = $this->syncCommentsFromInstagram($instagramPost, $instagram);
+
+            if ($imported === 0 && $instagramPost->comments_count > 0 && ! $instagramPost->comments()->exists()) {
+                session()->flash('warning', 'Instagram melaporkan ada komentar, tetapi API tidak mengembalikan datanya. Pastikan token memiliki izin instagram_business_manage_comments.');
+            }
+        } catch (Throwable $exception) {
+            Log::error('Failed to sync Instagram comments.', [
+                'instagram_post_id' => $instagramPost->id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            session()->flash('error', 'Komentar Instagram belum dapat disinkronkan: '.$exception->getMessage());
+        }
         $counts = $this->comments->countsBySentiment($filters);
         $dailyCounts = $this->comments->dailyCounts($filters);
 
@@ -76,12 +93,7 @@ class InstagramPostController extends Controller
     public function syncPosts(InstagramService $instagram): RedirectResponse
     {
         try {
-            $imported = 0;
-
-            foreach ($instagram->fetchPosts() as $post) {
-                $this->posts->upsert($post);
-                $imported++;
-            }
+            $imported = $this->syncPostsFromInstagram($instagram);
 
             return back()->with('success', "{$imported} postingan Instagram diproses.");
         } catch (Throwable $exception) {
@@ -91,27 +103,37 @@ class InstagramPostController extends Controller
         }
     }
 
-    public function syncComments(InstagramPost $instagramPost, InstagramService $instagram): RedirectResponse
+    private function syncPostsFromInstagram(InstagramService $instagram): int
     {
         try {
             $imported = 0;
 
-            foreach ($instagram->fetchCommentsForPost($instagramPost->instagram_media_id) as $comment) {
-                if (trim($comment['comment']) === '') {
-                    continue;
-                }
-
-                $sentimentName = $this->sentimentService->analyze($comment['comment']);
-                $sentiment = Sentiment::firstOrCreate(['name' => $sentimentName], ['label' => $sentimentName]);
-
-                $this->comments->upsert([
-                    ...$comment,
-                    'instagram_post_id' => $instagramPost->id,
-                    'sentiment_id' => $sentiment->id,
-                    'sentiment' => $sentimentName,
-                ]);
-
+            foreach ($instagram->fetchPosts() as $post) {
+                $this->posts->upsert($post);
                 $imported++;
+            }
+
+            // Hapus data contoh hanya setelah Instagram merespons dengan sukses,
+            // agar data lama tetap tersedia bila layanan API sedang bermasalah.
+            InstagramPost::query()
+                ->where('instagram_media_id', 'like', 'demo-instagram-%')
+                ->delete();
+
+            return $imported;
+        } catch (Throwable $exception) {
+            Log::error('Failed to sync Instagram posts.', ['message' => $exception->getMessage()]);
+
+            return 0;
+        }
+    }
+
+    public function syncComments(InstagramPost $instagramPost, InstagramService $instagram): RedirectResponse
+    {
+        try {
+            $imported = $this->syncCommentsFromInstagram($instagramPost, $instagram);
+
+            if ($imported === 0 && $instagramPost->comments_count > 0 && ! $instagramPost->comments()->exists()) {
+                return back()->with('warning', 'Instagram melaporkan ada komentar, tetapi API tidak mengembalikan datanya. Perbarui token dengan izin instagram_business_manage_comments.');
             }
 
             return back()->with('success', "{$imported} komentar diproses dari postingan yang dipilih.");
@@ -123,5 +145,30 @@ class InstagramPostController extends Controller
 
             return back()->with('error', $exception->getMessage());
         }
+    }
+
+    private function syncCommentsFromInstagram(InstagramPost $instagramPost, InstagramService $instagram): int
+    {
+        $imported = 0;
+
+        foreach ($instagram->fetchCommentsForPost($instagramPost->instagram_media_id) as $comment) {
+            if (trim($comment['comment']) === '') {
+                continue;
+            }
+
+            $sentimentName = $this->sentimentService->analyze($comment['comment']);
+            $sentiment = Sentiment::firstOrCreate(['name' => $sentimentName], ['label' => $sentimentName]);
+
+            $this->comments->upsert([
+                ...$comment,
+                'instagram_post_id' => $instagramPost->id,
+                'sentiment_id' => $sentiment->id,
+                'sentiment' => $sentimentName,
+            ]);
+
+            $imported++;
+        }
+
+        return $imported;
     }
 }

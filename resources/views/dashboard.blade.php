@@ -8,7 +8,13 @@
             <h1>Dashboard Social Monitoring</h1>
             <p class="subtitle">Ringkasan komentar dan sentimen media sosial Bapenda Kota Bandung.</p>
         </div>
-        <a class="button" href="{{ route('instagram.posts.index') }}">Kelola Postingan</a>
+        <div class="page-header-actions">
+            <a class="button" href="{{ route('instagram.posts.index') }}">Kelola Postingan</a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="button secondary">Logout</button>
+            </form>
+        </div>
     </div>
 
     <div class="grid stats">

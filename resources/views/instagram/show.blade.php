@@ -3,37 +3,54 @@
 @section('title', 'Detail Postingan Instagram')
 
 @section('content')
+    <style>
+        .detail-filters { grid-template-columns: repeat(4, minmax(150px, 1fr)); }
+        .detail-filters .wide { grid-column: span 2; }
+        .detail-filters .actions { align-items: center; grid-column: span 2; justify-content: space-between; }
+        .detail-filters .filter-actions, .detail-filters .export-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 8px; }
+        .detail-filters .actions .button, .detail-filters .actions button { min-height: 40px; }
+        .post-detail { align-items: center; display: grid; gap: 28px; grid-template-columns: minmax(260px, .9fr) minmax(300px, 1.1fr); margin-bottom: 18px; }
+        .post-detail-media { border-radius: 8px; max-height: 300px; object-fit: cover; width: 100%; }
+        .post-detail-info { display: grid; gap: 18px; }
+        .post-detail-info p { margin: 0; }
+        .detail-chart-panel { height: 440px; }
+        .detail-chart-panel canvas { height: 300px !important; max-height: 300px; }
+        @media (max-width: 1100px) { .detail-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); } .detail-filters .wide { grid-column: span 2; } }
+        @media (max-width: 800px) { .post-detail { grid-template-columns: 1fr; } .detail-filters { grid-template-columns: 1fr; } .detail-filters .wide, .detail-filters .actions { grid-column: auto; } .detail-filters .actions { justify-content: flex-start; } .detail-chart-panel { height: auto; min-height: 400px; } }
+    </style>
     <div class="page-header">
         <div>
             <h1>{{ $post->title }}</h1>
             <p class="subtitle">Komentar tersimpan dari postingan Instagram yang dipilih.</p>
         </div>
         <div class="actions">
-            <form action="{{ route('instagram.posts.comments.sync', $post) }}" method="POST">
+            <form method="POST" action="{{ route('instagram.posts.comments.sync', $post) }}">
                 @csrf
-                <button type="submit">Sync Komentar</button>
+                <button type="submit"><i class="bi bi-arrow-repeat"></i> Sinkronkan Komentar</button>
             </form>
             <a class="button secondary" href="{{ route('instagram.posts.index') }}">Kembali</a>
         </div>
     </div>
 
-    <section class="panel stack">
+    <section class="panel post-detail">
         @if ($post->display_image)
-            <img src="{{ $post->display_image }}" alt="Preview Instagram" class="rounded shadow-sm js-media-preview" style="max-height: 360px; object-fit: cover; width: 100%;">
+            <img src="{{ $post->display_image }}" alt="Preview Instagram" class="post-detail-media js-media-preview">
             <div class="bg-light d-none align-items-center justify-content-center text-muted rounded" style="height: 260px;">
                 <i class="bi bi-image fs-1"></i>
             </div>
         @endif
-        <p><strong>Caption:</strong> {{ $post->caption ?: '-' }}</p>
-        <p><strong>Tanggal posting:</strong> {{ optional($post->published_at)->timezone(config('app.timezone'))->format('d M Y H:i') }} WIB</p>
-        <p><strong>Jumlah Like:</strong> {{ $post->like_count ?? 0 }}</p>
-        <p><strong>Jumlah Komentar:</strong> {{ $post->comments_count ?? $totalCount }}</p>
-        @if ($post->permalink)
-            <p><strong>Link:</strong> <a href="{{ $post->permalink }}" target="_blank">{{ $post->permalink }}</a></p>
-        @endif
+        <div class="post-detail-info">
+            <p><strong>Caption:</strong> {{ $post->caption ?: '-' }}</p>
+            <p><strong>Tanggal posting:</strong> {{ optional($post->published_at)->timezone(config('app.timezone'))->format('d M Y H:i') }} WIB</p>
+            <p><strong>Jumlah Like:</strong> {{ $post->like_count ?? 0 }}</p>
+            <p><strong>Jumlah Komentar:</strong> {{ $post->comments_count ?? $totalCount }}</p>
+            @if ($post->permalink)
+                <p><strong>Link:</strong> <a href="{{ $post->permalink }}" target="_blank">{{ $post->permalink }}</a></p>
+            @endif
+        </div>
     </section>
 
-    <form class="panel filters" method="GET" action="{{ route('instagram.posts.show', $post) }}">
+    <form class="panel filters detail-filters" method="GET" action="{{ route('instagram.posts.show', $post) }}">
         <label>
             Periode
             <select name="period">
@@ -66,8 +83,14 @@
             <input type="search" name="search" value="{{ $filters['search'] ?? '' }}" placeholder="Username atau isi komentar">
         </label>
         <div class="actions">
-            <button type="submit">Filter</button>
-            <a class="button secondary" href="{{ route('instagram.posts.show', $post) }}">Reset</a>
+            <div class="filter-actions">
+                <button type="submit">Filter</button>
+                <a class="button secondary" href="{{ route('instagram.posts.show', $post) }}">Reset</a>
+            </div>
+            <div class="export-actions">
+                <a class="button excel" href="{{ route('reports.export.excel', array_merge(request()->query(), ['post_id' => $post->id])) }}"><i class="bi bi-file-earmark-excel-fill"></i> Download Excel</a>
+                <a class="button pdf-export" href="{{ route('reports.export.pdf', array_merge(request()->query(), ['post_id' => $post->id])) }}" target="_blank"><i class="bi bi-file-earmark-pdf-fill"></i> Download PDF</a>
+            </div>
         </div>
     </form>
 
@@ -80,7 +103,7 @@
 
     <div class="row g-3 mb-4">
         <div class="col-lg-6">
-            <section class="panel shadow-sm">
+            <section class="panel shadow-sm detail-chart-panel">
                 <h1>Pie Chart Sentimen</h1>
                 <canvas id="sentimentPie"></canvas>
                 <div class="row g-2 mt-3">
@@ -90,12 +113,7 @@
                 </div>
             </section>
         </div>
-        <div class="col-lg-6"><section class="panel shadow-sm"><h1>Bar Chart Jumlah Komentar</h1><canvas id="commentBar"></canvas></section></div>
-    </div>
-
-    <div class="report-actions">
-        <a class="button secondary" href="{{ route('reports.export.excel', array_merge(request()->query(), ['post_id' => $post->id])) }}">Export Excel</a>
-        <a class="button secondary" href="{{ route('reports.export.pdf', array_merge(request()->query(), ['post_id' => $post->id])) }}" target="_blank">Export PDF</a>
+        <div class="col-lg-6"><section class="panel shadow-sm detail-chart-panel"><h1>Bar Chart Jumlah Komentar</h1><canvas id="commentBar"></canvas></section></div>
     </div>
 
     <section class="panel">

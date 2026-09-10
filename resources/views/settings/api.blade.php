@@ -13,14 +13,6 @@
                 @csrf
                 <button type="submit">Tes Koneksi</button>
             </form>
-            <form action="{{ route('instagram.posts.sync') }}" method="POST">
-                @csrf
-                <button type="submit">Sinkronisasi Instagram</button>
-            </form>
-            <form action="{{ route('twitter.tweets.sync') }}" method="POST">
-                @csrf
-                <button type="submit">Sinkronisasi Twitter</button>
-            </form>
         </div>
     </div>
 
@@ -40,28 +32,6 @@
         <label>
             Facebook Page ID
             <input type="text" name="facebook_page_id" value="{{ old('facebook_page_id', $settings->facebook_page_id) }}">
-        </label>
-
-        <h1>Twitter/X</h1>
-        <label>
-            Bearer Token
-            <textarea name="twitter_bearer_token">{{ old('twitter_bearer_token', $settings->twitter_bearer_token) }}</textarea>
-        </label>
-        <label>
-            API Key
-            <input type="text" name="twitter_api_key" value="{{ old('twitter_api_key', $settings->twitter_api_key) }}">
-        </label>
-        <label>
-            API Secret
-            <textarea name="twitter_api_secret">{{ old('twitter_api_secret', $settings->twitter_api_secret) }}</textarea>
-        </label>
-        <label>
-            Client ID
-            <input type="text" name="twitter_client_id" value="{{ old('twitter_client_id', $settings->twitter_client_id) }}">
-        </label>
-        <label>
-            Client Secret
-            <textarea name="twitter_client_secret">{{ old('twitter_client_secret', $settings->twitter_client_secret) }}</textarea>
         </label>
 
         <div class="actions">
