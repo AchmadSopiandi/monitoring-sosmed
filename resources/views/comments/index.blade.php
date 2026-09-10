@@ -11,7 +11,7 @@
     <div class="page-header">
         <div>
             <h1>Data Komentar</h1>
-            <p class="subtitle">Pantau seluruh komentar Instagram dan Twitter/X yang sudah disimpan.</p>
+            <p class="subtitle">Pantau seluruh komentar Instagram yang sudah disimpan.</p>
         </div>
         <div class="page-header-actions">
             <a class="button excel" href="{{ route('reports.export.excel', $filters) }}"><i class="bi bi-file-earmark-excel-fill"></i> Download Excel</a>
@@ -20,14 +20,6 @@
     </div>
 
     <form class="panel filters comments-filters" method="GET" action="{{ route('comments.index') }}">
-        <label>
-            Sumber
-            <select name="source">
-                <option value="">Semua platform</option>
-                <option value="instagram" @selected(($filters['source'] ?? '') === 'instagram')>Instagram</option>
-                <option value="twitter" @selected(($filters['source'] ?? '') === 'twitter')>Twitter/X</option>
-            </select>
-        </label>
         <label>
             Periode
             <select name="period">

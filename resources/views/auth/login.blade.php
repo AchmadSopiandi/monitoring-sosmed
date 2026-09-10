@@ -36,6 +36,7 @@
         .notification { align-items: center; animation: notification-in .35s ease-out both; border: 1px solid transparent; border-radius: 14px; box-shadow: 0 18px 45px rgba(31, 41, 55, .2); display: flex; flex-direction: column; font-size: 14px; gap: 12px; max-width: 515px; min-height: 270px; padding: 24px; position: relative; text-align: center; width: 100%; }
         .notification.is-leaving { animation: notification-out .25s ease-in forwards; }
         .notification > i { align-items: center; background: #d1fad0; border-radius: 50%; color: #58ed38; display: flex; font-size: 48px; height: 124px; justify-content: center; margin-top: -8px; width: 124px; }
+        .notification.info > i { background: #dbeafe; color: #3b82f6; }
         .notification-content { line-height: 1.45; }
         .notification.success .notification-content { color: #202020; font-size: 22px; font-weight: 500; text-transform: uppercase; }
         .notification.success .notification-content::after { color: #999; content: "Selamat datang di sistem"; display: block; font-size: 14px; margin-top: 8px; text-transform: none; }
@@ -58,7 +59,7 @@
                 <span class="partner-logo"><img src="{{ route('login.logo', ['logo' => 'logo-itenas.png']) }}" alt="Itenas"></span>
             </div>
             <h1>SIMAK-BAPENDA <span>Sistem Informasi Monitoring Analisis Komentar</span></h1>
-            <p>Pantau percakapan Instagram dan Twitter/X Bapenda Kota Bandung dalam satu dashboard.</p>
+            <p>Pantau percakapan Instagram Bapenda Kota Bandung dalam satu dashboard.</p>
         </section>
         <section class="form-panel">
             <div class="login-card">
@@ -76,12 +77,19 @@
             </div>
         </section>
     </main>
-    @if (session('success') || $errors->any())
+    @if (session('success') || session('status') || $errors->any())
     <div class="notification-stack" aria-live="polite" aria-atomic="true">
         @if (session('success'))
             <div class="notification success" role="status">
                 <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
                 <span class="notification-content">{{ session('success') }}</span>
+                <button type="button" class="notification-close" aria-label="Tutup notifikasi">&times;</button>
+            </div>
+        @endif
+        @if (session('status'))
+            <div class="notification info" role="status">
+                <i class="bi bi-info-circle-fill" aria-hidden="true"></i>
+                <span class="notification-content">{{ session('status') }}</span>
                 <button type="button" class="notification-close" aria-label="Tutup notifikasi">&times;</button>
             </div>
         @endif
@@ -96,13 +104,30 @@
     @endif
     <script>
         document.querySelectorAll('.notification').forEach((notification) => {
+            const stack = notification.closest('.notification-stack');
+            let dismissed = false;
+
+            const removeNotification = () => {
+                notification.remove();
+
+                if (! stack?.querySelector('.notification')) {
+                    stack?.remove();
+                }
+            };
+
             const dismiss = () => {
+                if (dismissed) {
+                    return;
+                }
+
+                dismissed = true;
                 notification.classList.add('is-leaving');
-                notification.addEventListener('animationend', () => notification.remove(), { once: true });
+                notification.addEventListener('animationend', removeNotification, { once: true });
+                window.setTimeout(removeNotification, 350);
             };
 
             notification.querySelector('.notification-close').addEventListener('click', dismiss);
-            window.setTimeout(dismiss, 4500);
+            window.setTimeout(dismiss, 4000);
         });
     </script>
 </body>

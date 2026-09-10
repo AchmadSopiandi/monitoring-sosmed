@@ -87,7 +87,7 @@
         .metric-grid {
             display: grid;
             gap: 14px;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
         }
 
         .metric-card {
@@ -95,9 +95,9 @@
             border: 1px solid var(--border);
             border-radius: 12px;
             box-shadow: 0 10px 24px rgba(15, 23, 42, .05);
-            min-height: 116px;
+            min-height: 120px;
             overflow: hidden;
-            padding: 18px;
+            padding: 18px 18px 16px;
             position: relative;
         }
 
@@ -112,7 +112,7 @@
         }
 
         .metric-top {
-            align-items: flex-start;
+            align-items: center;
             display: flex;
             gap: 12px;
             justify-content: space-between;
@@ -120,9 +120,11 @@
 
         .metric-label {
             color: #667085;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            letter-spacing: .3px;
+            letter-spacing: .25px;
+            line-height: 1.35;
+            max-width: 130px;
             text-transform: uppercase;
         }
 
@@ -131,7 +133,7 @@
             font-size: 31px;
             font-weight: 850;
             line-height: 1.1;
-            margin-top: 8px;
+            margin-top: 10px;
         }
 
         .metric-icon {
@@ -140,9 +142,10 @@
             border-radius: 10px;
             color: var(--metric-color, #0f94d6);
             display: inline-flex;
-            height: 36px;
+            flex: 0 0 38px;
+            height: 38px;
             justify-content: center;
-            width: 36px;
+            width: 38px;
         }
 
         .chart-grid {
@@ -151,15 +154,14 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .chart-grid.bottom {
-            grid-template-columns: minmax(280px, .85fr) minmax(360px, 1.15fr);
-        }
-
         .dashboard-panel {
             background: var(--panel);
             border: 1px solid var(--border);
             border-radius: 14px;
             box-shadow: 0 10px 26px rgba(15, 23, 42, .05);
+            display: flex;
+            flex-direction: column;
+            min-height: 420px;
             padding: 18px;
         }
 
@@ -187,12 +189,12 @@
         }
 
         .chart-box {
-            height: 260px;
+            height: 270px;
             position: relative;
         }
 
         .chart-box.tall {
-            height: 310px;
+            height: 270px;
         }
 
         .sentiment-legend {
@@ -202,6 +204,10 @@
             grid-template-columns: repeat(3, minmax(0, 1fr));
             margin-top: 14px;
             padding-top: 14px;
+        }
+
+        .dashboard-panel .sentiment-legend {
+            margin-top: auto;
         }
 
         .legend-item {
@@ -223,7 +229,7 @@
 
         @media (max-width: 1100px) {
             .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-            .chart-grid, .chart-grid.bottom { grid-template-columns: 1fr; }
+            .chart-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 640px) {
@@ -240,7 +246,7 @@
     <div class="dashboard-hero">
         <div>
             <h1>Dashboard Social Monitoring</h1>
-            <p class="subtitle">Overview monitoring Instagram dan Twitter/X Bapenda Kota Bandung.</p>
+            <p class="subtitle">Overview monitoring Instagram Bapenda Kota Bandung.</p>
         </div>
         <div class="hero-actions">
             <div class="period-filter" aria-label="Filter periode dashboard">
@@ -259,15 +265,6 @@
                     <div class="metric-value">{{ $instagramTotal }}</div>
                 </div>
                 <span class="metric-icon"><i class="bi bi-instagram"></i></span>
-            </div>
-        </div>
-        <div class="metric-card" style="--metric-color: #1da1f2;">
-            <div class="metric-top">
-                <div>
-                    <div class="metric-label">Komentar Twitter</div>
-                    <div class="metric-value">{{ $twitterTotal }}</div>
-                </div>
-                <span class="metric-icon"><i class="bi bi-twitter"></i></span>
             </div>
         </div>
         <div class="metric-card" style="--metric-color: #16a34a;">
@@ -310,28 +307,10 @@
         </section>
         <section class="dashboard-panel">
             <div class="panel-title">
-                <h2>Sentimen Twitter/X</h2>
-                <span class="panel-pill">{{ $twitterTotal }} komentar</span>
-            </div>
-            <div class="chart-box"><canvas id="twitterPie"></canvas></div>
-            <div class="sentiment-legend" id="twitterPieLegend"></div>
-        </section>
-    </div>
-
-    <div class="chart-grid bottom">
-        <section class="dashboard-panel">
-            <div class="panel-title">
-                <h2>Instagram vs Twitter/X</h2>
-                <span class="panel-pill">Per platform</span>
-            </div>
-            <div class="chart-box tall"><canvas id="comparisonBar"></canvas></div>
-        </section>
-        <section class="dashboard-panel">
-            <div class="panel-title">
                 <h2>Perkembangan Komentar</h2>
                 <span class="panel-pill">Harian</span>
             </div>
-            <div class="chart-box tall"><canvas id="dailyLine"></canvas></div>
+            <div class="chart-box"><canvas id="dailyLine"></canvas></div>
         </section>
     </div>
     </div>
@@ -341,8 +320,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         const instagramPie = @json($instagramPieChart);
-        const twitterPie = @json($twitterPieChart);
-        const comparisonChart = @json($comparisonChart);
         const lineChart = @json($lineChart);
         const sentimentColors = ['#2563eb', '#16a34a', '#dc2626'];
         const emptyColor = '#e5eaf2';
@@ -380,7 +357,6 @@
         };
 
         makeDoughnut('instagramPie', instagramPie);
-        makeDoughnut('twitterPie', twitterPie);
 
         const renderSentimentLegend = (targetId, chart) => {
             document.getElementById(targetId).innerHTML = chart.labels.map((label, index) => `
@@ -391,37 +367,12 @@
             `).join('');
         };
         renderSentimentLegend('instagramPieLegend', instagramPie);
-        renderSentimentLegend('twitterPieLegend', twitterPie);
-
-        new Chart(document.getElementById('comparisonBar'), {
-            type: 'bar',
-            data: {
-                labels: comparisonChart.labels,
-                datasets: [{
-                    label: 'Komentar',
-                    data: comparisonChart.data,
-                    backgroundColor: ['#e83e8c', '#1da1f2'],
-                    borderRadius: 10,
-                    maxBarThickness: 64,
-                }]
-            },
-            options: {
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { display: false }, ticks: { color: '#475467', font: { weight: '700' } } },
-                    y: { beginAtZero: true, ticks: { precision: 0, color: '#667085' }, grid: { color: '#edf2f7' } }
-                }
-            }
-        });
-
         new Chart(document.getElementById('dailyLine'), {
             type: 'line',
             data: {
                 labels: lineChart.labels,
                 datasets: [
-                    { label: 'Instagram', data: lineChart.instagram, borderColor: '#e83e8c', backgroundColor: 'rgba(232, 62, 140, .12)', fill: true, tension: .35, pointRadius: 3 },
-                    { label: 'Twitter/X', data: lineChart.twitter, borderColor: '#1da1f2', backgroundColor: 'rgba(29, 161, 242, .10)', fill: true, tension: .35, pointRadius: 3 }
+                    { label: 'Instagram', data: lineChart.instagram, borderColor: '#e83e8c', backgroundColor: 'rgba(232, 62, 140, .12)', fill: true, tension: .35, pointRadius: 3 }
                 ]
             },
             options: {

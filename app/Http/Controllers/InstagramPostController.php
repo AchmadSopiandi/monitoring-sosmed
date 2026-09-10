@@ -48,7 +48,21 @@ class InstagramPostController extends Controller
         ]);
 
         $filters['post_id'] = (string) $instagramPost->id;
-        $this->syncCommentsFromInstagram($instagramPost, $instagram);
+
+        try {
+            $imported = $this->syncCommentsFromInstagram($instagramPost, $instagram);
+
+            if ($imported === 0 && $instagramPost->comments_count > 0 && ! $instagramPost->comments()->exists()) {
+                session()->flash('warning', 'Instagram melaporkan ada komentar, tetapi API tidak mengembalikan datanya. Pastikan token memiliki izin instagram_business_manage_comments.');
+            }
+        } catch (Throwable $exception) {
+            Log::error('Failed to sync Instagram comments.', [
+                'instagram_post_id' => $instagramPost->id,
+                'message' => $exception->getMessage(),
+            ]);
+
+            session()->flash('error', 'Komentar Instagram belum dapat disinkronkan: '.$exception->getMessage());
+        }
         $counts = $this->comments->countsBySentiment($filters);
         $dailyCounts = $this->comments->dailyCounts($filters);
 
@@ -99,6 +113,12 @@ class InstagramPostController extends Controller
                 $imported++;
             }
 
+            // Hapus data contoh hanya setelah Instagram merespons dengan sukses,
+            // agar data lama tetap tersedia bila layanan API sedang bermasalah.
+            InstagramPost::query()
+                ->where('instagram_media_id', 'like', 'demo-instagram-%')
+                ->delete();
+
             return $imported;
         } catch (Throwable $exception) {
             Log::error('Failed to sync Instagram posts.', ['message' => $exception->getMessage()]);
@@ -111,6 +131,10 @@ class InstagramPostController extends Controller
     {
         try {
             $imported = $this->syncCommentsFromInstagram($instagramPost, $instagram);
+
+            if ($imported === 0 && $instagramPost->comments_count > 0 && ! $instagramPost->comments()->exists()) {
+                return back()->with('warning', 'Instagram melaporkan ada komentar, tetapi API tidak mengembalikan datanya. Perbarui token dengan izin instagram_business_manage_comments.');
+            }
 
             return back()->with('success', "{$imported} komentar diproses dari postingan yang dipilih.");
         } catch (Throwable $exception) {
@@ -125,35 +149,26 @@ class InstagramPostController extends Controller
 
     private function syncCommentsFromInstagram(InstagramPost $instagramPost, InstagramService $instagram): int
     {
-        try {
-            $imported = 0;
+        $imported = 0;
 
-            foreach ($instagram->fetchCommentsForPost($instagramPost->instagram_media_id) as $comment) {
-                if (trim($comment['comment']) === '') {
-                    continue;
-                }
-
-                $sentimentName = $this->sentimentService->analyze($comment['comment']);
-                $sentiment = Sentiment::firstOrCreate(['name' => $sentimentName], ['label' => $sentimentName]);
-
-                $this->comments->upsert([
-                    ...$comment,
-                    'instagram_post_id' => $instagramPost->id,
-                    'sentiment_id' => $sentiment->id,
-                    'sentiment' => $sentimentName,
-                ]);
-
-                $imported++;
+        foreach ($instagram->fetchCommentsForPost($instagramPost->instagram_media_id) as $comment) {
+            if (trim($comment['comment']) === '') {
+                continue;
             }
 
-            return $imported;
-        } catch (Throwable $exception) {
-            Log::error('Failed to sync Instagram comments.', [
+            $sentimentName = $this->sentimentService->analyze($comment['comment']);
+            $sentiment = Sentiment::firstOrCreate(['name' => $sentimentName], ['label' => $sentimentName]);
+
+            $this->comments->upsert([
+                ...$comment,
                 'instagram_post_id' => $instagramPost->id,
-                'message' => $exception->getMessage(),
+                'sentiment_id' => $sentiment->id,
+                'sentiment' => $sentimentName,
             ]);
 
-            return 0;
+            $imported++;
         }
+
+        return $imported;
     }
 }

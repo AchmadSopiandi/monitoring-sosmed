@@ -23,20 +23,14 @@
                 <tr>
                     @unless ($detail ?? false)
                         <td>
-                            @if ($comment instanceof \App\Models\TweetComment)
-                                <span class="badge source-twitter"><i class="bi bi-twitter-x"></i> Twitter/X</span>
-                            @else
-                                <span class="badge source-instagram"><i class="bi bi-instagram"></i> Instagram</span>
-                            @endif
+                            <span class="badge source-instagram"><i class="bi bi-instagram"></i> Instagram</span>
                         </td>
                     @endunless
                     <td>{{ $comment->username }}</td>
                     <td>{{ $comment->comment }}</td>
                     @unless ($detail ?? false)
                         <td>
-                            @if ($comment instanceof \App\Models\TweetComment && $comment->tweet)
-                                <a href="{{ route('twitter.tweets.show', $comment->tweet) }}">{{ str($comment->tweet->display_text)->limit(80) }}</a>
-                            @elseif ($comment->post)
+                            @if ($comment->post)
                                 <a href="{{ route('instagram.posts.show', $comment->post) }}">{{ $comment->post->title }}</a>
                             @else
                                 -
@@ -54,7 +48,7 @@
                     @unless ($detail ?? false)
                         <td>
                             <div class="actions">
-                                <a class="button secondary" href="{{ route('comments.show', ['comment' => $comment, 'source' => $comment instanceof \App\Models\TweetComment ? 'twitter' : 'instagram']) }}">Detail</a>
+                                <a class="button secondary" href="{{ route('comments.show', ['comment' => $comment, 'source' => 'instagram']) }}">Detail</a>
                             </div>
                         </td>
                     @endunless

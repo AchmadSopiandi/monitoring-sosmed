@@ -24,6 +24,10 @@
             <p class="subtitle">Komentar tersimpan dari postingan Instagram yang dipilih.</p>
         </div>
         <div class="actions">
+            <form method="POST" action="{{ route('instagram.posts.comments.sync', $post) }}">
+                @csrf
+                <button type="submit"><i class="bi bi-arrow-repeat"></i> Sinkronkan Komentar</button>
+            </form>
             <a class="button secondary" href="{{ route('instagram.posts.index') }}">Kembali</a>
         </div>
     </div>

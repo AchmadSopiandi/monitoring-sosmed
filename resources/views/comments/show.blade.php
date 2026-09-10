@@ -6,14 +6,14 @@
     <div class="page-header">
         <div>
             <h1>Detail Komentar</h1>
-            <p class="subtitle">Informasi lengkap komentar {{ $comment instanceof \App\Models\TweetComment ? 'Twitter/X' : 'Instagram' }}.</p>
+            <p class="subtitle">Informasi lengkap komentar Instagram.</p>
         </div>
         <a class="button secondary" href="{{ route('comments.index') }}">Kembali</a>
     </div>
 
     <section class="panel">
-        <p><strong>Sumber:</strong> {{ $comment instanceof \App\Models\TweetComment ? 'Twitter/X' : 'Instagram' }}</p>
-        <p><strong>Postingan:</strong> {{ $comment instanceof \App\Models\TweetComment ? str($comment->tweet?->display_text)->limit(120) : $comment->post?->title ?? '-' }}</p>
+        <p><strong>Sumber:</strong> Instagram</p>
+        <p><strong>Postingan:</strong> {{ $comment->post?->title ?? '-' }}</p>
         <p><strong>Username:</strong> {{ $comment->username }}</p>
         <p><strong>Komentar:</strong> {{ $comment->comment }}</p>
         <p><strong>Like:</strong> {{ $comment->like_count ?? '-' }}</p>

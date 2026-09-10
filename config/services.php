@@ -31,14 +31,6 @@ return [
         'comments_limit' => env('INSTAGRAM_COMMENTS_LIMIT', 50),
     ],
 
-    'twitter' => [
-        'bearer_token' => env('TWITTER_BEARER_TOKEN'),
-        'user_id' => env('TWITTER_USER_ID'),
-        'base_url' => env('TWITTER_API_BASE_URL', 'https://api.twitter.com/2'),
-        'tweet_limit' => env('TWITTER_TWEET_LIMIT', 25),
-        'reply_limit' => env('TWITTER_REPLY_LIMIT', 50),
-    ],
-
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),

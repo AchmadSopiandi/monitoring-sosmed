@@ -23,22 +23,6 @@ return new class extends Migration
             $table->longText('comment')->change();
         });
 
-        if (! Schema::hasColumn('tweets', 'tweet')) {
-            Schema::table('tweets', function (Blueprint $table) {
-                $table->longText('tweet')->nullable()->after('text');
-            });
-        }
-
-        Schema::table('tweets', function (Blueprint $table) {
-            $table->longText('text')->nullable()->change();
-            $table->longText('tweet')->nullable()->change();
-            $table->text('permalink')->nullable()->change();
-        });
-
-        Schema::table('tweet_comments', function (Blueprint $table) {
-            $table->longText('comment')->change();
-            $table->longText('reply')->nullable()->change();
-        });
     }
 
     public function down(): void
@@ -58,15 +42,5 @@ return new class extends Migration
             $table->text('comment')->change();
         });
 
-        Schema::table('tweets', function (Blueprint $table) {
-            $table->text('text')->nullable()->change();
-            $table->text('tweet')->nullable()->change();
-            $table->string('permalink')->nullable()->change();
-        });
-
-        Schema::table('tweet_comments', function (Blueprint $table) {
-            $table->text('comment')->change();
-            $table->text('reply')->nullable()->change();
-        });
     }
 };

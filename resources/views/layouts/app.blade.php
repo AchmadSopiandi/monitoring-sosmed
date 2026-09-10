@@ -92,12 +92,10 @@
         .nav i { font-size: 15px; width: 15px; }
         .nav .icon-dashboard { color: #ffffff; }
         .nav .icon-instagram { color: #ff36aa; }
-        .nav .icon-twitter { color: #36baff; }
         .nav .icon-comments { color: #2ee6a6; }
         .nav .icon-settings { color: #ffc928; }
         .nav a.active i { color: #ffffff; }
         .nav a.active .icon-instagram { color: #ff36aa; }
-        .nav a.active .icon-twitter { color: #36baff; }
         .nav a.active .icon-comments { color: #2ee6a6; }
         .content { padding: 32px; }
         .page-header { align-items: center; display: flex; gap: 16px; justify-content: space-between; margin-bottom: 24px; }
@@ -146,7 +144,6 @@
         .badge.netral { background: #dcfce7; color: var(--neutral); }
         .badge.negatif { background: #fee2e2; color: var(--negative); }
         .badge.source-instagram { background: #fce7f3; color: #db2777; }
-        .badge.source-twitter { background: #dbeafe; color: #1d4ed8; }
         .button, button {
             align-items: center;
             appearance: none;
@@ -276,7 +273,6 @@
             <nav class="nav">
                 <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}"><i class="bi bi-house-fill icon-dashboard"></i> Dashboard</a>
                 <a href="{{ route('instagram.posts.index') }}" class="{{ request()->routeIs('instagram.posts.*') ? 'active' : '' }}"><i class="bi bi-instagram icon-instagram"></i> Instagram</a>
-                <a href="{{ route('twitter.tweets.index') }}" class="{{ request()->routeIs('twitter.tweets.*') ? 'active' : '' }}"><i class="bi bi-twitter icon-twitter"></i> Twitter</a>
                 <a href="{{ route('comments.index') }}" class="{{ request()->routeIs('comments.*') ? 'active' : '' }}"><i class="bi bi-chat-dots-fill icon-comments"></i> Comments</a>
                 <div class="logout-sidebar-form">
                     <form method="POST" action="{{ route('logout') }}">
@@ -314,13 +310,30 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.querySelectorAll('.notification').forEach((notification) => {
+            const stack = notification.closest('.notification-stack');
+            let dismissed = false;
+
+            const removeNotification = () => {
+                notification.remove();
+
+                if (! stack?.querySelector('.notification')) {
+                    stack?.remove();
+                }
+            };
+
             const dismiss = () => {
+                if (dismissed) {
+                    return;
+                }
+
+                dismissed = true;
                 notification.classList.add('is-leaving');
-                notification.addEventListener('animationend', () => notification.remove(), { once: true });
+                notification.addEventListener('animationend', removeNotification, { once: true });
+                window.setTimeout(removeNotification, 350);
             };
 
             notification.querySelector('.notification-close').addEventListener('click', dismiss);
-            window.setTimeout(dismiss, 4500);
+            window.setTimeout(dismiss, 4000);
         });
     </script>
     @yield('scripts')

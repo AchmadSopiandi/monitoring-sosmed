@@ -20,11 +20,6 @@ class ApiSettingController extends Controller
             'instagram_token' => ['nullable', 'string'],
             'instagram_user_id' => ['nullable', 'string', 'max:255'],
             'facebook_page_id' => ['nullable', 'string', 'max:255'],
-            'twitter_bearer_token' => ['nullable', 'string'],
-            'twitter_api_key' => ['nullable', 'string', 'max:255'],
-            'twitter_api_secret' => ['nullable', 'string'],
-            'twitter_client_id' => ['nullable', 'string', 'max:255'],
-            'twitter_client_secret' => ['nullable', 'string'],
         ]);
 
         $settings->update($validated);
@@ -38,10 +33,6 @@ class ApiSettingController extends Controller
         $messages[] = $settings->instagramToken() && $settings->instagramUserId()
             ? 'Instagram siap dites.'
             : 'Instagram belum lengkap.';
-        $messages[] = $settings->twitterBearerToken()
-            ? 'Twitter/X siap dites.'
-            : 'Twitter/X belum lengkap.';
-
         return back()->with('success', implode(' ', $messages));
     }
 }
